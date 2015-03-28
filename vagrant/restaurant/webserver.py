@@ -51,7 +51,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
             output+= "<a href = '/restaurants/new'> Add a New Restaurant</a></br></br>"
             for restaurant in restaurants:
                 output+= self.name_format(restaurant.name)
-                output+=self.edit_format(str(restaurant.id)+'/edit')
+                output+=self.edit_format('/restaurants/'+str(restaurant.id)+'/edit')
                 output+=self.delete_format('')
                 output+="</br>"
             output += "</body></html>"
@@ -59,17 +59,19 @@ class WebServerHandler(BaseHTTPRequestHandler):
             return
         
         if self.path.endswith("/edit"):
-            print self.path.split('/')[1]
-            restaurants = session.query(Restaurant).filter(Restaurant.id == self.path.split('/')[1]).all()
-            for restaurant in restaurants: print restaurant.name
+            rid= self.path.split('/')[2]
+            #print self.path.split('/')[1], self.path.split('/')[2]
+            restaurant = session.query(Restaurant).filter_by(id = rid).one()
             self.response_ok()#return sucessful response codes
-            output = ""
-            output += "<html><body>"
-            output += "<h1>EDIT</h1>"
-            output += "<form method = 'POST' enctype='multipart/form-data' action = '/restaurants/new'>"
-            output += "<input name = 'newRestaurantName' type = 'text' placeholder = '%s' > "%restaurant.name
-            output += "<input type='submit' value='Create'>"
-            output += "</form></body></html>"
+            output = "<html><body>"
+            output += "<h1>"
+            output += restaurant.name
+            output += "</h1>"
+            output += "<form method='POST' enctype='multipart/form-data' action = '/restaurants/%s/edit' >" % rid
+            output += "<input name = 'newRestaurantName' type='text' placeholder = '%s' >" % restaurant.name
+            output += "<input type = 'submit' value = 'Rename'>"
+            output += "</form>"
+            output += "</body></html>"
             self.wfile.write(output)
             return
 
@@ -114,15 +116,16 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     messagecontent = fields.get('newRestaurantName')
               
                     #edit Restaurant Object
-                    restaurants = session.query(Restaurant).filter(Restaurant.id == self.path.split('/')[1]).all()
-                    for restaurant in restaurants: pass
-                    session.query(Restaurant).filter(Restaurant.id == restaurant.id).update({restaurant.name: messagecontent}, synchronize_session=False)
-                    session.commit()
-              
-                    self.send_response(301)
-                    self.send_header('Content-type', 'text/html')
-                    self.send_header('Location','/restaurants')
-                    self.end_headers()
+                    rid= self.path.split('/')[2]
+                    restaurant = session.query(Restaurant).filter_by(id = rid).one()
+                    if restaurant !=[]:
+                        restaurant.name = messagecontent[0]
+                        session.add(restaurant)
+                        session.commit()
+                        self.send_response(301)
+                        self.send_header('Content-type', 'text/html')
+                        self.send_header('Location','/restaurants')
+                        self.end_headers()
         except:
             pass
 
