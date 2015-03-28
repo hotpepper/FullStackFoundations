@@ -51,13 +51,29 @@ class WebServerHandler(BaseHTTPRequestHandler):
             output+= "<a href = '/restaurants/new'> Add a New Restaurant</a></br></br>"
             for restaurant in restaurants:
                 output+= self.name_format(restaurant.name)
-                output+=self.edit_format('')
+                output+=self.edit_format(str(restaurant.id)+'/edit')
                 output+=self.delete_format('')
                 output+="</br>"
             output += "</body></html>"
             self.wfile.write(output)
             return
+        
+        if self.path.endswith("/edit"):
+            print self.path.split('/')[1]
+            restaurants = session.query(Restaurant).filter(Restaurant.id == self.path.split('/')[1]).all()
+            for restaurant in restaurants: print restaurant.name
+            self.response_ok()#return sucessful response codes
+            output = ""
+            output += "<html><body>"
+            output += "<h1>EDIT</h1>"
+            output += "<form method = 'POST' enctype='multipart/form-data' action = '/restaurants/new'>"
+            output += "<input name = 'newRestaurantName' type = 'text' placeholder = '%s' > "%restaurant.name
+            output += "<input type='submit' value='Create'>"
+            output += "</form></body></html>"
+            self.wfile.write(output)
+            return
 
+        
         if self.path.endswith("/restaurants/new"):
             #restaurants = session.query(Restaurant).all()
             self.response_ok()#return sucessful response codes
@@ -84,6 +100,23 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     #Create new Restaurant Object
                     newRestaurant = Restaurant(name = messagecontent[0])
                     session.add(newRestaurant)
+                    session.commit()
+              
+                    self.send_response(301)
+                    self.send_header('Content-type', 'text/html')
+                    self.send_header('Location','/restaurants')
+                    self.end_headers()
+
+            if self.path.endswith("/edit"):
+                ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+                if ctype == 'multipart/form-data':
+                    fields = cgi.parse_multipart(self.rfile,pdict)
+                    messagecontent = fields.get('newRestaurantName')
+              
+                    #edit Restaurant Object
+                    restaurants = session.query(Restaurant).filter(Restaurant.id == self.path.split('/')[1]).all()
+                    for restaurant in restaurants: pass
+                    session.query(Restaurant).filter(Restaurant.id == restaurant.id).update({restaurant.name: messagecontent}, synchronize_session=False)
                     session.commit()
               
                     self.send_response(301)
