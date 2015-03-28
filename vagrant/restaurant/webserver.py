@@ -52,7 +52,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
             for restaurant in restaurants:
                 output+= self.name_format(restaurant.name)
                 output+=self.edit_format('/restaurants/'+str(restaurant.id)+'/edit')
-                output+=self.delete_format('')
+                output+=self.delete_format('/restaurants/'+str(restaurant.id)+'/delete')
                 output+="</br>"
             output += "</body></html>"
             self.wfile.write(output)
@@ -70,6 +70,19 @@ class WebServerHandler(BaseHTTPRequestHandler):
             output += "<form method='POST' enctype='multipart/form-data' action = '/restaurants/%s/edit' >" % rid
             output += "<input name = 'newRestaurantName' type='text' placeholder = '%s' >" % restaurant.name
             output += "<input type = 'submit' value = 'Rename'>"
+            output += "</form>"
+            output += "</body></html>"
+            self.wfile.write(output)
+            return
+
+        if self.path.endswith("/delete"):
+            rid= self.path.split('/')[2]
+            restaurant = session.query(Restaurant).filter_by(id = rid).one()
+            self.response_ok()#return sucessful response codes
+            output = "<html><body>"
+            output += "<h1>Delete %s </h1>"%restaurant.name
+            output += "<form method='POST' enctype = 'multipart/form-data' action = '/restaurants/%s/delete'>" % str(rid)
+            output += "<input type = 'submit' value = 'Delete'>"
             output += "</form>"
             output += "</body></html>"
             self.wfile.write(output)
@@ -107,6 +120,17 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     self.send_response(301)
                     self.send_header('Content-type', 'text/html')
                     self.send_header('Location','/restaurants')
+                    self.end_headers()
+
+            if self.path.endswith("/delete"):
+                rid = self.path.split("/")[2]
+                restaurant = session.query(Restaurant).filter_by(id=rid).one()
+                if restaurant !=[]:
+                    session.delete(restaurant)
+                    session.commit()
+                    self.send_response(301)
+                    self.send_header('Content-type', 'text/html')
+                    self.send_header('Location', '/restaurants')
                     self.end_headers()
 
             if self.path.endswith("/edit"):
