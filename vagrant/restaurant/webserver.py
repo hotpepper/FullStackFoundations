@@ -16,6 +16,12 @@ def add_br(fn):#decorator
         return fn(*args)+"</br>"
     return add
 
+def outer(arg):
+    def add_ref(fn):#decorator
+        def add(*args):
+            return "<a href ='"+fn(*args)+"'>"+arg+"</a></br>"
+        return add
+    return add_ref
 #playing with decorators
 
 
@@ -29,7 +35,14 @@ class WebServerHandler(BaseHTTPRequestHandler):
     @add_br
     def name_format(self, name):
         return name
-        
+
+    @outer('Edit')
+    def edit_format(self, link):
+        return link
+    @outer('Delete')
+    def delete_format(self, link):
+        return link
+    
     def do_GET(self):
         if self.path.endswith("/restaurants"):
             restaurants = session.query(Restaurant).all()
@@ -37,6 +50,9 @@ class WebServerHandler(BaseHTTPRequestHandler):
             output = "<html><body>"
             for restaurant in restaurants:
                 output+= self.name_format(restaurant.name)
+                
+                output+=self.edit_format('')
+                output+=self.delete_format('')
                 output+="</br>"
             output += "</body></html>"
             self.wfile.write(output)
