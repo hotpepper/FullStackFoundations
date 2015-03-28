@@ -50,10 +50,23 @@ class WebServerHandler(BaseHTTPRequestHandler):
             output = "<html><body>"
             for restaurant in restaurants:
                 output+= self.name_format(restaurant.name)
-                
                 output+=self.edit_format('')
                 output+=self.delete_format('')
                 output+="</br>"
+            output += "</body></html>"
+            self.wfile.write(output)
+            return
+
+        if self.path.endswith("/restaurants/new"):
+            restaurants = session.query(Restaurant).all()
+            self.response_ok()#return sucessful response codes
+            output = ""
+            output += "<html><body>"
+            output += "<h1>Add new Restaurant</h1>"
+            output += '''<form method='POST' enctype='multipart/form-data'
+                        action='/restaurants'><h2>Restaurant Name</h2>
+                        <input name="message" type="text" ><input type="submit"
+                        value="Submit"> </form>'''
             output += "</body></html>"
             self.wfile.write(output)
             return
@@ -71,11 +84,18 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 messagecontent = fields.get('message')
             output = ""
             output +=  "<html><body>"
-            output += " <h2> Okay, how about this: </h2>"
-            output += "<h1> %s </h1>" % messagecontent[0]
-            output += '''<form method='POST' enctype='multipart/form-data' action='/hello'><h2>What would you like me to say?</h2><input name="message" type="text" ><input type="submit" value="Submit"> </form>'''
+            output += "<h1>Add new Restaurant</h1>"
+            output += "<h1>Name: %s </h1>" % messagecontent[0]
+            output += '''<form method='POST' enctype='multipart/form-data'
+                        action='/restaurants'><h2>Restaurant Name</h2>
+                        <input name="message" type="text" ><input type="submit"
+                        value="Submit"> </form>'''
             output += "</body></html>"
             self.wfile.write(output)
+            restaurant1 = Restaurant(name = messagecontent[0])
+            session.add(restaurant1)
+            session.commit()
+            self.do_GET()
             print output
         except:
             pass
