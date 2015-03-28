@@ -1,32 +1,45 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Restaurant, Base, MenuItem
+
+engine = create_engine('sqlite:///restaurantmenu.db')
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+#playing with decorators
+def add_br(fn):#decorator
+    def add(*args):
+        return fn(*args)+"</br>"
+    return add
+
+#playing with decorators
+
+
+
 class WebServerHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path.endswith("/hello"):
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            output = ""
-            output += "<html><body>"
-            output += "<h1>Hello!</h1>"
-            output += '''<form method='POST' enctype='multipart/form-data' action='/hello'><h2>What would you like me to say?</h2><input name="message" type="text" ><input type="submit" value="Submit"> </form>'''
-            output += "</body></html>"
-            self.wfile.write(output)
-            print output
-            return
+    def response_ok(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+    @add_br
+    def name_format(self, name):
+        return name
         
-        if self.path.endswith("/hola"):
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            output = ""
-            output += "<html><body>"
-            output += "<h1>&#161 Hola !</h1>"
-            output += '''<form method='POST' enctype='multipart/form-data' action='/hello'><h2>What would you like me to say?</h2><input name="message" type="text" ><input type="submit" value="Submit"> </form>'''
+    def do_GET(self):
+        if self.path.endswith("/restaurants"):
+            restaurants = session.query(Restaurant).all()
+            self.response_ok()#return sucessful response codes
+            output = "<html><body>"
+            for restaurant in restaurants:
+                output+= self.name_format(restaurant.name)
+                output+="</br>"
             output += "</body></html>"
             self.wfile.write(output)
-            print output
             return
         else:
             self.send_error(404, 'File Not Found: %s' % self.path)
