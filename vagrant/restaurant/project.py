@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+
+#http://localhost:5000/restaurants/2/
+from flask import Flask, render_template, request, redirect, url_for, flash
 app = Flask(__name__)
 
 from sqlalchemy import create_engine
@@ -26,6 +28,7 @@ def newMenuItem(restaurant_id):
         newItem = MenuItem(name = request.form['name'],restaurant_id=restaurant_id)
         session.add(newItem)
         session.commit()
+        flash("new menu item created!")
         return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
     else:
         return render_template('newmenuitem.html',restaurant_id = restaurant_id)
@@ -57,5 +60,6 @@ def deleteMenuItem(restaurant_id, menu_id):
         return render_template('deletemenuitem.html', restaurant_id = restaurant_id, menu_id = menu_id, item = deleteItem)
 
 if __name__ == '__main__':
+    app.secret_key = 'super_secrect_key'
     app.debug = True
     app.run(host = '0.0.0.0', port = 5000)
