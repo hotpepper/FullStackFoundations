@@ -5,14 +5,14 @@
 <body>
 	<h2>this page will be for editing restaurant ID#  {{ restaurant_id }} </h2>
 
-	<form action= "#" method = 'POST'>
+	<form action= "{{url_for('editRestaurant',restaurant_id = restaurant.id)}}"  method = 'POST'>
 
 	<p>Name:
 	<input type = 'text' size='30' name = 'name' placeholder = '{{restaurant.name}}'>
 
 	<input type='submit' value='Edit'>
 
-	<a href= '#'>Cancel</a>
+	<a href= '/'>Cancel</a>
 	</p>
 
 </body>
