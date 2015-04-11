@@ -3,6 +3,26 @@
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-	<h2>this page will add a new item to the menu for restaurant ID#  {{ restaurant_id }} </h2>
+	<h2 >this page will add a new item to the menu for restaurant ID#  {{ restaurant_id }} </h2>
+	<form action= "/restaurants/{{restaurant_id}}/menu" method = 'POST'>
+
+	<p>Name:</p>
+	<input type = 'text' size='30' name = 'name' placeholder = 'Garbage'>
+	<p>Description: </p>
+	<input type = 'text' size='30' name = 'name' placeholder = 'Crappy food made quickly'>
+	<p>Price: </p>
+	<input type = 'text' size='30' name = 'name' placeholder = "Not as cheap as you'd think"><br>
+	<p>Catagory</p>
+	<input type="checkbox" name="vehicle" value="Bike" > Appetizer<br>
+	<input type="checkbox" name="vehicle" value="Bike"> Entree<br>
+	<input type="checkbox" name="vehicle" value="Bike"> Dessert<br>
+	<input type="checkbox" name="vehicle" value="Bike"> Beverage<br>
+	<br>
+	<input type='submit' value='Add'>
+
+</form>
+
+	
+
 </body>
 </html>	

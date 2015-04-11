@@ -4,5 +4,18 @@
 </head>
 <body>
 	<h2>this page will show the menu for restaurant ID#  {{ restaurant_id }} </h2>
+	<p>
+		{% if not items %}
+			<p>You currently have no menu items.</p>
+    		<a href="/restaurants/{{restaurant_id}}/menu/new">Create new menu item</a>
+  		{% else %}
+			{% for i in items %}
+			<h1>{{i.course}}</h1>
+			<h3>{{i.name}}</h3>
+			<h4>{{i.description}}</h4>
+			<h4>{{i.price}}</h4><br>
+			{% endfor %}
+		{% endif %}
+	</p>
 </body>
 </html>	

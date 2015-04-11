@@ -3,6 +3,14 @@
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-	<h2>this will show all the restaurants</h2>
+	<h1>This will show all the restaurants</h1><br>
+
+	{% for restaurant in restaurants %}
+	<h2>{{restaurant.name}}</h2>
+		<a href = '#'>edit</a>
+		<a href = '#'>delete</a><br>
+	{% endfor %}
+	<br>
+	<a href = '/restaurants/new'> New Restaurant</a>
 </body>
 </html>	
