@@ -6,14 +6,14 @@
 	<h2>this page will edit an item on the menu for restaurant ID#  {{ restaurant_id }} for menu item# {{ menu_id }}</h2>
 	<h1>Edit Menu Item</h1>
 
-	<form action= "/restaurants/{{restaurant_id}}/menu" method = 'POST'>
+	<form action= "{{url_for('editMenuItem',restaurant_id = restaurant_id, menu_id=menu_id)}}" method = 'POST'>
 
 	<p>Name:
 	<input type = 'text' size='30' name = 'name' placeholder = '{{item.name}}'>
 
 	<input type='submit' value='Edit'>
 
-	<a href= '#'>Cancel</a>
+	<a href= "{{url_for('showMenu', restaurant_id = restaurant_id)}}">Cancel</a>
 	</p>
 	</form>
 

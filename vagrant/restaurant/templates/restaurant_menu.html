@@ -7,14 +7,23 @@
 	<p>
 		{% if not items %}
 			<p>You currently have no menu items.</p>
-    		<a href="/restaurants/{{restaurant_id}}/menu/new">Create new menu item</a>
+    		<a href="/restaurants/{{restaurant_id}}/menu/new">Create new menu item</a><br>
+    		<a href="/">Cancel</a>
   		{% else %}
 			{% for i in items %}
+			<!--<h3>{{i.id}}</h3><br>-->
 			<h1>{{i.course}}</h1>
 			<h3>{{i.name}}</h3>
 			<h4>{{i.description}}</h4>
 			<h4>{{i.price}}</h4><br>
+
+			<a href = "{{url_for('editMenuItem', restaurant_id= restaurant_id, menu_id=i.id)}}">Edit </a> <br>
+			<a href = "{{url_for('deleteMenuItem', restaurant_id= restaurant_id, menu_id=i.id)}}"> Delete</a>
 			{% endfor %}
+			<br><br>
+			<h1>
+			<a href = "{{url_for('newMenuItem', restaurant_id= restaurant_id)}}">Add New Item </a> <br>
+			</h1>
 		{% endif %}
 	</p>
 </body>
