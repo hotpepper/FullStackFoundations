@@ -110,6 +110,24 @@ def deleteMenuItem(restaurant_id, menu_id):
 	else:
 		return render_template('restaurant_menu_delete.html', restaurant_id=restaurant_id, menu_id=menu_id, item=item)
 
+#making api edpoint (get)
+@app.route('/restaurants/JSON')
+def restaurantsJSON():
+    restaurants = session.query(Restaurant).all()
+    return jsonify(Restaurant=[{'name':i.name, 'id':i.id} for i in restaurants])
+
+#making api edpoint (get)
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+def restaurantMenuJSON(restaurant_id):
+	restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+	items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
+	return jsonify(MenuItems=[i.serialize for i in items])
+
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/JSON')
+def restaurantMenuItemJSON(restaurant_id, menu_id):
+    restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+    item = session.query(MenuItem).filter_by(id = menu_id).one() 
+    return jsonify(MenuItem=[item.serialize])
 
 
 if __name__ == '__main__':
