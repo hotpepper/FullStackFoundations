@@ -64,16 +64,17 @@ def editRestaurant(restaurant_id):
 	else:
 		return render_template('edit_restaurant.html', restaurant_id=restaurant_id, restaurant=editedRestaurant)
 
-
-
-
-
-
-
 @app.route('/restaurants/<int:restaurant_id>/')
 @app.route('/restaurants/<int:restaurant_id>/menu')
 def showMenu(restaurant_id):
-    return render_template('restaurant_menu.html', restaurant_id=restaurant_id, items = items)
+	items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
+	return render_template('restaurant_menu.html', restaurant_id=restaurant_id, items = items)
+
+
+
+
+
+
 
 @app.route('/restaurants/<int:restaurant_id>/menu/new')
 def newMenuItem(restaurant_id):
